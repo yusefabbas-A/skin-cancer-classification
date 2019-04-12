@@ -46,9 +46,9 @@ public class ResultActivity extends AppCompatActivity {
                     if (response.body() != null) {
                         List<PieEntry> pieEntries = new ArrayList<>();
 
-                        for (SamplesRes samplesRes : response.body()) {
-                            pieEntries.add(new PieEntry());
-                        }
+//                        for (SamplesRes samplesRes : response.body()) {
+//                            pieEntries.add(new PieEntry());
+//                        }
 
 
                         MPieChart.setVisibility(View.VISIBLE);
