@@ -28,13 +28,11 @@ import com.yojoo.skincancerclassifier.Connection.ConnectionManager;
 import com.yojoo.skincancerclassifier.Connection.MyResponse;
 import com.yojoo.skincancerclassifier.Connection.SkinAPI;
 import com.yojoo.skincancerclassifier.R;
-import com.yojoo.skincancerclassifier.model.SamplesRes;
 
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
 import java.util.Locale;
 import java.util.logging.Logger;
 
@@ -50,7 +48,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     ImageView imageView;
     Button CameraBtn, upload, ResultBtn;
     TextView TheMsg;
-    private PieChart MPieChart;
+//    private PieChart MPieChart;
 
     private static final int REQUEST_TAKE_PHOTO = 0;
     private static final int REQUEST_PICK_PHOTO = 2;
@@ -81,7 +79,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
-        MPieChart = findViewById(R.id.pieChart);
+//        MPieChart = findViewById(R.id.pieChart);
         TheMsg = findViewById(R.id.text_sms);
         imageView = findViewById(R.id.img);
         upload = findViewById(R.id.upload_btn);
