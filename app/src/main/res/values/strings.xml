@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">SkinCancerClassifier</string>
+    <string name="gallery">gallery</string>
+    <string name="upload">Upload</string>
+    <string name="uploadImages">Set your image</string>
+    <string name="msg_loading">Loading...</string>
+    <string name="see_result">See Result</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+</resources>
