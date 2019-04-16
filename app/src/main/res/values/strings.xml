@@ -8,4 +8,8 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="magnifier">MAGNIFIER</string>
+    <string name="chosen_image">chosen image</string>
+    <string name="choose_image_button">choose image button</string>
+    <string name="background_image">background Image</string>
 </resources>

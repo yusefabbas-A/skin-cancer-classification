@@ -22,10 +22,9 @@ import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.bumptech.glide.Glide;
-import com.github.mikephil.charting.charts.PieChart;
 import com.yojoo.skincancerclassifier.BuildConfig;
 import com.yojoo.skincancerclassifier.Connection.ConnectionManager;
-import com.yojoo.skincancerclassifier.Connection.MyResponse;
+import com.yojoo.skincancerclassifier.Data.MyResponse;
 import com.yojoo.skincancerclassifier.Connection.SkinAPI;
 import com.yojoo.skincancerclassifier.R;
 
@@ -381,5 +380,11 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                 }
             });
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        startActivity(new Intent(this, StartActivity.class));
+        finish();
     }
 }

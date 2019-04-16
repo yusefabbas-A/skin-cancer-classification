@@ -2,6 +2,7 @@ package com.yojoo.skincancerclassifier.Connection;
 
 
 
+import com.yojoo.skincancerclassifier.Data.MyResponse;
 import com.yojoo.skincancerclassifier.Data.SampleResult;
 
 import java.util.List;
@@ -16,7 +17,7 @@ import retrofit2.http.Part;
 public interface SkinAPI {
 
     @GET("/api/skins/reports/1")
-    Call<List<SampleResult>> getSamples();
+    Call<SampleResult> getSamples();
 
     @Multipart
     @POST("/api/skins/subjects/")

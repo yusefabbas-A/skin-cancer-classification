@@ -6,6 +6,10 @@
     <color name="labany">#58c3ef</color>
     <color name="colorWhite">#ffffff</color>
     <color name="colorBlackTransparent">#7b000000</color>
+    <color name="colorTransparent">#00ffffff</color>
+    <color name="colorYellowish">#FBA626</color>
+    <color name="colorBlack">#000</color>
+    <color name="colorWeird">#E3D5AC</color>
 
 
 </resources>

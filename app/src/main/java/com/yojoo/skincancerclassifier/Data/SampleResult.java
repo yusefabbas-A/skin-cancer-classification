@@ -1,37 +1,31 @@
 
 package com.yojoo.skincancerclassifier.Data;
 
-import java.util.List;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+
+import java.util.List;
 
 public class SampleResult {
 
     @SerializedName("id")
     @Expose
-    public String id;
-    @SerializedName("op_status")
-    @Expose
-    public float opStatus;
+    private String id;
     @SerializedName("message")
     @Expose
-    public String message;
+    private String message;
     @SerializedName("image_url")
     @Expose
-    public String imageUrl;
-    @SerializedName("response_available_samples")
-    @Expose
-    public List<String> responseAvailableSamples = null;
+    private String imageUrl;
     @SerializedName("samples_scores")
     @Expose
-    public SamplesScores samplesScores;
+    private List<Sample> samples;
+    @SerializedName("classified_as")
+    @Expose
+    private String classifiedAs;
 
     public String getId() {
         return id;
-    }
-
-    public float getOpStatus() {
-        return opStatus;
     }
 
     public String getMessage() {
@@ -42,11 +36,20 @@ public class SampleResult {
         return imageUrl;
     }
 
-    public List<String> getResponseAvailableSamples() {
-        return responseAvailableSamples;
+    public List<Sample> getSamples() {
+        return samples;
     }
 
-    public SamplesScores getSamplesScores() {
-        return samplesScores;
+    public String getClassifiedAs() {
+        return classifiedAs;
+    }
+
+
+
+    @Override
+    public String toString() {
+        return "SampleResult{" +
+                "message='" + getMessage() + '\'' +
+                '}';
     }
 }
