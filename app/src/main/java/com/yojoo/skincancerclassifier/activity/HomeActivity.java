@@ -47,25 +47,16 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     ImageView imageView;
     Button CameraBtn, upload, ResultBtn;
     TextView TheMsg;
-//    private PieChart MPieChart;
-
+//  private PieChart MPieChart;
     private static final int REQUEST_TAKE_PHOTO = 0;
     private static final int REQUEST_PICK_PHOTO = 2;
     private Uri mMediaUri;
     private static final int CAMERA_PIC_REQUEST = 1111;
-
     private static final String TAG = HomeActivity.class.getSimpleName();
-
     private static final int CAMERA_CAPTURE_IMAGE_REQUEST_CODE = 100;
-
     public static final int MEDIA_TYPE_IMAGE = 1;
-
     private Uri fileUri;
-
     private String mediaPath;
-
-    private Button btnCapturePicture;
-
     private String mImageFileLocation = "";
     public static final String IMAGE_DIRECTORY_NAME = "Android File Upload";
     ProgressDialog pDialog;
@@ -79,7 +70,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_home);
 
 //        MPieChart = findViewById(R.id.pieChart);
-        TheMsg = findViewById(R.id.text_sms);
+//        TheMsg = findViewById(R.id.text_sms);
         imageView = findViewById(R.id.img);
         upload = findViewById(R.id.upload_btn);
         CameraBtn = findViewById(R.id.camera_btn);
@@ -129,9 +120,10 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                 break;
 
             case R.id.result_btn:
+
                 Intent intent = new Intent(HomeActivity.this, ResultActivity.class);
                 startActivity(intent);
-                finish();
+//                finish();
         }
 
     }
@@ -292,6 +284,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         return Uri.fromFile(getOutputMediaFile(type));
     }
 
+
     private static File getOutputMediaFile(int type) {
 
         // External sdcard location
@@ -382,9 +375,9 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    @Override
-    public void onBackPressed() {
-        startActivity(new Intent(this, StartActivity.class));
-        finish();
-    }
+//    @Override
+//    public void onBackPressed() {
+//        startActivity(new Intent(this, StartActivity.class));
+////        finish();
+//    }
 }

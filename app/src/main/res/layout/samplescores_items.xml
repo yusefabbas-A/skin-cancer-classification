@@ -13,7 +13,7 @@
         app:layout_constraintTop_toTopOf="parent"
         android:layout_marginStart="20dp"
         tools:text="type:"
-        android:textColor="@color/colorWhite"
+        android:textColor="@color/colorBlack"
         android:textSize="24sp" />
     <TextView
         android:id="@+id/sample_score"
@@ -24,7 +24,7 @@
         app:layout_constraintStart_toEndOf="@id/sample_type"
         tools:text="score"
         android:layout_marginEnd="200dp"
-        android:textColor="@color/colorWhite"
+        android:textColor="@color/colorBlack"
         android:textSize="24sp" />
 
 </android.support.constraint.ConstraintLayout>

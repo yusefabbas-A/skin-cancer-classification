@@ -4,12 +4,30 @@
     <string name="upload">Upload</string>
     <string name="uploadImages">Set your image</string>
     <string name="msg_loading">Loading...</string>
-    <string name="see_result">See Result</string>
-
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="see_result">Result</string>
     <string name="magnifier">MAGNIFIER</string>
     <string name="chosen_image">chosen image</string>
     <string name="choose_image_button">choose image button</string>
     <string name="background_image">background Image</string>
+    <string name="skip">skip</string>
+    <string name="guest">Guest</string>
+    <string name="start">start</string>
+    <string name="theStart">Start</string>
+    <string name="login">Login</string>
+    <string name="logo">logo</string>
+    <string name="home">Home</string>
+    <string name="result">Result</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_activity_main">MainActivity</string>
+    <string name="tab_text_1">Home</string>
+    <string name="tab_text_2">Results</string>
+    <string name="action_settings">Settings</string>
+    <string name="section_format">Hello World from section: %1$d</string>
+    <string name="pick_from_camera">Pick From Camera</string>
+    <string name="remove_image">Remove Image</string>
+    <string name="pick_from_gallery">Pick From Gallery</string>
+    <string name="cant_read_selected_image">Can\'t Read Selected Image</string>
+    <string name="can_not_open_camera">Can\'t Open Camera</string>
 </resources>

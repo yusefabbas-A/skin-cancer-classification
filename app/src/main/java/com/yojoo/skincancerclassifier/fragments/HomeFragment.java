@@ -1,0 +1,265 @@
+package com.yojoo.skincancerclassifier.fragments;
+
+
+import android.Manifest;
+import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.app.Dialog;
+import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
+import android.os.Build;
+import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.Fragment;
+import android.support.v4.content.FileProvider;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.Toast;
+
+import com.bumptech.glide.Glide;
+import com.yojoo.skincancerclassifier.BuildConfig;
+import com.yojoo.skincancerclassifier.R;
+
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+import java.util.Objects;
+import java.util.logging.Logger;
+
+import static android.app.Activity.RESULT_CANCELED;
+import static android.support.constraint.Constraints.TAG;
+import static android.support.v4.provider.FontsContractCompat.FontRequestCallback.RESULT_OK;
+
+/**
+ * A simple {@link Fragment} subclass.
+ */
+public class HomeFragment extends Fragment implements View.OnClickListener{
+    private Button CameraBtn , UploadBtn;
+    private ImageView imageView;
+    private View fragmentView;
+    String mCurrentPhotoPath;
+    private File imageFile;
+    private Uri selectedImageUri;
+    static final int REQUEST_IMAGE_CAPTURE = 1;
+    static final int REQUEST_TAKE_PHOTO = 1;
+    private static final int GALLERY_REQUEST = 100;
+    private static final int GALLERY_PERMISSION_REQUEST = 200;
+
+    Context context = getActivity();
+
+    public HomeFragment() {
+        // Required empty public constructor
+    }
+
+
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        fragmentView = inflater.inflate(R.layout.fragment_home, container, false);
+
+        CameraBtn = fragmentView.findViewById(R.id.camera_btn_frag);
+        UploadBtn = fragmentView.findViewById(R.id.upload_btn_frag);
+        imageView = fragmentView.findViewById(R.id.img_frag);
+
+        CameraBtn.setOnClickListener(this);
+        UploadBtn.setOnClickListener(this);
+        return fragmentView;
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()){
+            case R.id.camera_btn_frag:
+                startDialog();
+                break;
+            case R.id.upload_btn_frag:
+                // do something
+                break;
+
+        }
+
+
+    }
+
+
+
+    protected void startDialog(){
+        final Dialog dialog = new Dialog(getActivity());
+        dialog.setContentView(R.layout.custom_dialog);
+        dialog.getWindow().getAttributes().width =
+                getResources().getDisplayMetrics().widthPixels;
+        Button camera = dialog.findViewById(R.id.pick_camera_Btn);
+        Button gallery = dialog.findViewById(R.id.pick_gallery_Btn);
+        Button deletePick = dialog.findViewById(R.id.delete_photo_Btn);
+
+        camera.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openCamera();
+                dialog.hide();
+
+            }
+        });
+
+        gallery.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openGallery();
+                dialog.hide();
+
+            }
+        });
+
+        deletePick.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                imageView.setImageResource(0);
+                dialog.hide();
+
+            }
+        });
+
+
+        dialog.show();
+
+    }
+
+    private void openGallery() {
+        Intent i = new Intent(Intent.ACTION_PICK);
+        i.setData(MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        startActivityForResult(i, GALLERY_REQUEST);
+    }
+
+    private void openCamera() {
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        // Ensure that there's a camera activity to handle the intent
+        if (takePictureIntent.resolveActivity(getActivity().getPackageManager()) != null) {
+            // Create the File where the photo should go
+            File photoFile = null;
+            try {
+                photoFile = createImageFile();
+            } catch (IOException ex) {
+                // Error occurred while creating the File
+            }
+            // Continue only if the File was successfully created
+            if (photoFile != null) {
+                Uri photoURI = FileProvider.getUriForFile(getActivity(),
+                        BuildConfig.APPLICATION_ID + ".provider",
+                        photoFile);
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+            }
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == GALLERY_REQUEST && resultCode == Activity.RESULT_OK) {
+            selectedImageUri = data.getData();
+            if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+                readFileFromSelectedURI();
+            } else {
+                ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, GALLERY_PERMISSION_REQUEST);
+            }
+        } else if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == Activity.RESULT_OK) {
+            setPic();
+        }
+    }
+
+    private void readFileFromSelectedURI() {
+        Cursor cursor = getActivity().getContentResolver().query(selectedImageUri, new String[]{MediaStore.Images.Media.DATA}, null, null, null);
+        if (cursor != null) {
+            cursor.moveToFirst();
+            String imagePath = cursor.getString(0);
+
+            cursor.close();
+            imageFile = new File(imagePath);
+            Bitmap image = BitmapFactory.decodeFile(imagePath);
+            try {
+                image.compress(Bitmap.CompressFormat.JPEG, 50, new FileOutputStream(imageFile));
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+            imageView.setImageBitmap(image);
+        }
+
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == GALLERY_PERMISSION_REQUEST) {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                readFileFromSelectedURI();
+            } else {
+                Toast.makeText(context, R.string.cant_read_selected_image, Toast.LENGTH_SHORT).show();
+            }
+        } else {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                openCamera();
+            } else {
+                Toast.makeText(context, R.string.can_not_open_camera, Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    private File createImageFile() throws IOException {
+        // Create an image file name
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.ENGLISH).format(new Date());
+        String imageFileName = "JPEG_" + timeStamp + "_";
+        File storageDir = getActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File image = File.createTempFile(
+                imageFileName,  /* prefix */
+                ".jpg",         /* suffix */
+                storageDir      /* directory */
+        );
+
+        // Save a file: path for use with ACTION_VIEW intents
+        mCurrentPhotoPath = image.getAbsolutePath();
+        return image;
+    }
+
+    private void setPic() {
+        // Get the dimensions of the View
+        int targetW = imageView.getWidth();
+        int targetH = imageView.getHeight();
+
+        // Get the dimensions of the bitmap
+        BitmapFactory.Options bmOptions = new BitmapFactory.Options();
+        bmOptions.inJustDecodeBounds = true;
+        BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
+        int photoW = bmOptions.outWidth;
+        int photoH = bmOptions.outHeight;
+
+        // Determine how much to scale down the image
+        int scaleFactor = Math.min(photoW/targetW, photoH/targetH);
+
+        // Decode the image file into a Bitmap sized to fill the View
+        bmOptions.inJustDecodeBounds = false;
+        bmOptions.inSampleSize = scaleFactor;
+        bmOptions.inPurgeable = true;
+
+        Bitmap bitmap = BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
+        imageView.setImageBitmap(bitmap);
+    }
+
+}

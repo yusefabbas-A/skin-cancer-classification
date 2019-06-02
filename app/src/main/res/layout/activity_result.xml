@@ -36,26 +36,13 @@
         app:layout_constraintBottom_toTopOf="@+id/result_txt"
         />
 
-    <!--<TextView-->
-        <!--android:id="@+id/Score_list"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_marginStart="20dp"-->
-        <!--android:textColor="@color/colorWhite"-->
-        <!--android:textSize="20sp"-->
-        <!--tools:text="@string/hello_blank_fragment"-->
-        <!--app:layout_constraintStart_toStartOf="parent"-->
-        <!--app:layout_constraintEnd_toEndOf="parent"-->
-        <!--app:layout_constraintTop_toBottomOf="@+id/pieChart"-->
-        <!--app:layout_constraintBottom_toTopOf="@+id/result_txt"/>-->
-
     <TextView
         android:id="@+id/result_txt"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textColor="@color/colorWhite"
         android:layout_marginBottom="20dp"
-        android:textSize="25sp"
+        android:textSize="20sp"
         tools:text="hellooloool"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

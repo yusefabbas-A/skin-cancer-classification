@@ -25,8 +25,15 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".activity.StartActivity" />
-        <activity android:name=".activity.HomeActivity" />
+        <activity
+            android:name=".activity.StartActivity"
+            android:label="@string/theStart" />
+        <activity
+            android:name=".activity.HomeActivity"
+            android:label="@string/home" />
+        <activity
+            android:name=".activity.ResultActivity"
+            android:label="@string/result" />
 
         <provider
             android:name="android.support.v4.content.FileProvider"
@@ -38,7 +45,10 @@
                 android:resource="@xml/provider_paths" />
         </provider>
 
-        <activity android:name=".activity.ResultActivity"></activity>
+        <activity
+            android:name=".activity.MainActivity"
+            android:label="@string/title_activity_main"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
 </manifest>

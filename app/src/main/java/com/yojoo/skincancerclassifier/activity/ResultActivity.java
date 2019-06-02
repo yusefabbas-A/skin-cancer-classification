@@ -2,10 +2,9 @@ package com.yojoo.skincancerclassifier.activity;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
+import android.graphics.Color;
 import android.os.Bundle;
-import android.support.v7.widget.RecyclerView;
-import android.util.Log;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -18,15 +17,13 @@ import com.github.mikephil.charting.data.PieEntry;
 import com.github.mikephil.charting.utils.ColorTemplate;
 import com.yojoo.skincancerclassifier.Connection.ConnectionManager;
 import com.yojoo.skincancerclassifier.Connection.SkinAPI;
+import com.yojoo.skincancerclassifier.Data.MyResponse;
 import com.yojoo.skincancerclassifier.Data.Sample;
 import com.yojoo.skincancerclassifier.Data.SampleResult;
 import com.yojoo.skincancerclassifier.R;
-import com.yojoo.skincancerclassifier.adabter.SamplesAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -34,12 +31,8 @@ import retrofit2.Response;
 
 public class ResultActivity extends AppCompatActivity {
         private PieChart MPieChart;
-        TextView TheResult,scores;
-        RecyclerView recycler;
-
-
-
-
+        TextView TheResult;
+        MyResponse myResponse;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,12 +40,8 @@ public class ResultActivity extends AppCompatActivity {
         setContentView(R.layout.activity_result);
         MPieChart = findViewById(R.id.pieChart);
         TheResult = findViewById(R.id.result_txt);
-//        scores = findViewById(R.id.Score_list);
-//        recycler = findViewById(R.id.recyclerList);
-//        recycler.setHasFixedSize(true);
 
 
-//        getResults();
 
 
        getSamplesChart();
@@ -60,50 +49,11 @@ public class ResultActivity extends AppCompatActivity {
 
     }
 
-//    private void getResults() {
-//        SkinAPI skinAPI = ConnectionManager.getApiServices();
-//        Call<SampleResult> call = skinAPI.getSamples();
-//        call.enqueue(new Callback<SampleResult>() {
-//            @SuppressLint("SetTextI18n")
-//            @Override
-//            public void onResponse(Call<SampleResult> call, Response<SampleResult> response) {
-//                if (response.isSuccessful()){
-//                    if (response.body() != null){
-//                       SampleResult sampleResult = response.body();
-//                        List<Sample> samples = response.body().getSamples();
-//                        for (Sample sample : samples){
-//                            String content = "";
-//                            content += "Type: " + sample.getType() + " Score: " + sample.getScore()+ "\n";
-//                            scores.append(content);
-//
-//                        }
-//                        TheResult.setText(sampleResult.getClassifiedAs());
-////                        recycler.setAdapter(new SamplesAdapter(samples));
-////                        TheResult.setText("Classified as: "+ sampleResult.getClassifiedAs());
-//                        //Toast.makeText(ResultActivity.this, "The message is: "+ TheString, Toast.LENGTH_SHORT).show();
-//                    }
-//
-//                }
-//                else {
-//                    TheResult.setText("code: " + response.code());
-//                }
-//
-//            }
-//
-//            @Override
-//            public void onFailure(Call<SampleResult> call, Throwable t) {
-//                TheResult.setText(t.getMessage());
-//                Toast.makeText(ResultActivity.this, "look at:"+ t.getMessage(), Toast.LENGTH_SHORT).show();
-//                Log.v("Response gotten is", t.getMessage());
-//            }
-//        });
-//    }
-
-
     private void getSamplesChart(){
         SkinAPI skinAPI = ConnectionManager.getApiServices();
-        Call<SampleResult> call = skinAPI.getSamples();
+        Call<SampleResult> call = skinAPI.getSamples(myResponse.getKey());
         call.enqueue(new Callback<SampleResult>() {
+            @SuppressLint("SetTextI18n")
             @Override
             public void onResponse(Call<SampleResult> call, Response<SampleResult> response) {
                 if (response.isSuccessful()){
@@ -115,12 +65,15 @@ public class ResultActivity extends AppCompatActivity {
                             pieEntries.add(new PieEntry(sample.getScore(), sample.getType()));
                         }
                         MPieChart.setVisibility(View.VISIBLE);
-                        MPieChart.animateXY(5000, 5000);
+                        MPieChart.animateXY(4000, 4000);
                         PieDataSet pieDataSet = new PieDataSet(pieEntries, "Samples");
-                        pieDataSet.setColors(ColorTemplate.COLORFUL_COLORS);
 
+                        pieDataSet.setColors(ColorTemplate.MATERIAL_COLORS);
                         PieData pieData = new PieData(pieDataSet);
+                        pieData.setValueTextSize(10f);
+                        pieData.setValueTextColor(Color.GREEN);
                         MPieChart.setData(pieData);
+                        MPieChart.setDrawHoleEnabled(false);
                         Description description = new Description();
                         description.setText("Scores for Samples");
                         MPieChart.setDescription(description);
@@ -144,9 +97,7 @@ public class ResultActivity extends AppCompatActivity {
 
     }
 
-    @Override
-    public void onBackPressed() {
-        startActivity(new Intent(this, HomeActivity.class));
-        finish();
-    }
+
+
+
 }
