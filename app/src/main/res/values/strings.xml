@@ -30,4 +30,7 @@
     <string name="pick_from_gallery">Pick From Gallery</string>
     <string name="cant_read_selected_image">Can\'t Read Selected Image</string>
     <string name="can_not_open_camera">Can\'t Open Camera</string>
+    <string name="register">Register</string>
+    <string name="not_registered_go_ahead">Not Registered Go a head!</string>
+    <string name="messages">Messages</string>
 </resources>

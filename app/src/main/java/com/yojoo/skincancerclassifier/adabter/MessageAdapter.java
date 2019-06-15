@@ -7,29 +7,33 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.yojoo.skincancerclassifier.Data.Messages;
 import com.yojoo.skincancerclassifier.Data.Report;
 import com.yojoo.skincancerclassifier.R;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageViewHolder>{
-    private ArrayList<Report> Messagelist;
+    private List<Messages> MessageList;
+
+    public MessageAdapter(List<Messages> messageList){
+        MessageList = messageList;
+    }
+
 
     public static  class MessageViewHolder extends RecyclerView.ViewHolder{
         public TextView message, TextDate;
 
         public MessageViewHolder(View itemView) {
             super(itemView);
-
             message = itemView.findViewById(R.id.message_text);
             TextDate = itemView.findViewById(R.id.Date_text);
 
         }
     }
 
-    public MessageAdapter(ArrayList<Report> messagelist){
-        Messagelist = messagelist;
-    }
+
 
     @NonNull
     @Override
@@ -41,11 +45,14 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
 
     @Override
     public void onBindViewHolder(@NonNull MessageViewHolder holder, int position) {
+        Messages currentItem = MessageList.get(position);
 
+        holder.message.setText(currentItem.getMessage());
+        holder.TextDate.setText(currentItem.getDate());
     }
 
     @Override
     public int getItemCount() {
-        return 0;
+        return MessageList.size();
     }
 }

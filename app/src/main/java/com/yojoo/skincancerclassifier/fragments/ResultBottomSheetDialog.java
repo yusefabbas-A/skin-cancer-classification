@@ -1,11 +1,14 @@
-package com.yojoo.skincancerclassifier.activity;
+package com.yojoo.skincancerclassifier.fragments;
 
 import android.annotation.SuppressLint;
-import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.design.widget.BottomSheetDialogFragment;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -21,6 +24,7 @@ import com.yojoo.skincancerclassifier.Data.MyResponse;
 import com.yojoo.skincancerclassifier.Data.Sample;
 import com.yojoo.skincancerclassifier.Data.SampleResult;
 import com.yojoo.skincancerclassifier.R;
+import com.yojoo.skincancerclassifier.activity.ResultActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,19 +33,20 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class ResultActivity extends AppCompatActivity {
-        private PieChart MPieChart;
-        TextView TheResult;
-        MyResponse myResponse;
+public class ResultBottomSheetDialog extends BottomSheetDialogFragment {
+    private PieChart MPieChart;
+    TextView TheResult;
+    MyResponse myResponse;
 
+
+    @Nullable
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_result);
-        MPieChart = findViewById(R.id.pieChart);
-        TheResult = findViewById(R.id.result_txt);
-
-       getSamplesChart();
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View v = inflater.inflate(R.layout.bottom_sheet, container,false);
+        MPieChart = v.findViewById(R.id.pieChart_frag);
+        TheResult = v.findViewById(R.id.result_txt_frag);
+        getSamplesChart();
+        return v;
     }
 
     private void getSamplesChart(){
@@ -62,7 +67,6 @@ public class ResultActivity extends AppCompatActivity {
                         MPieChart.setVisibility(View.VISIBLE);
                         MPieChart.animateXY(4000, 4000);
                         PieDataSet pieDataSet = new PieDataSet(pieEntries, "Samples");
-
                         pieDataSet.setColors(ColorTemplate.MATERIAL_COLORS);
                         PieData pieData = new PieData(pieDataSet);
                         pieData.setValueTextSize(10f);
@@ -74,23 +78,19 @@ public class ResultActivity extends AppCompatActivity {
                         MPieChart.setDescription(description);
                         MPieChart.invalidate();
                         TheResult.setText("The Sample is Classified as: " + sampleResult.getClassifiedAs());
-
                     }
-
                 }
-
             }
-
-
             @Override
             public void onFailure(Call<SampleResult> call, Throwable t) {
-                Toast.makeText(ResultActivity.this, "ERROR", Toast.LENGTH_SHORT).show();
-
+                Toast.makeText(getActivity(), "ERROR", Toast.LENGTH_SHORT).show();
             }
-
         });
-
     }
+
+
+
+
 
 
 

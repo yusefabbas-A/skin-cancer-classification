@@ -31,18 +31,34 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.yojoo.skincancerclassifier.BuildConfig;
+import com.yojoo.skincancerclassifier.Connection.ConnectionManager;
+import com.yojoo.skincancerclassifier.Connection.SkinAPI;
+import com.yojoo.skincancerclassifier.Data.Messages;
+import com.yojoo.skincancerclassifier.Data.MyResponse;
+import com.yojoo.skincancerclassifier.Data.Report;
+import com.yojoo.skincancerclassifier.Database.DatabaseManager;
 import com.yojoo.skincancerclassifier.R;
+import com.yojoo.skincancerclassifier.activity.HomeActivity;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.logging.Logger;
+
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 import static android.app.Activity.RESULT_CANCELED;
 import static android.support.constraint.Constraints.TAG;
@@ -51,15 +67,16 @@ import static android.support.v4.provider.FontsContractCompat.FontRequestCallbac
 /**
  * A simple {@link Fragment} subclass.
  */
-public class HomeFragment extends Fragment implements View.OnClickListener{
-    private Button CameraBtn , UploadBtn;
+public class HomeFragment extends Fragment implements View.OnClickListener {
+    private Button CameraBtn, UploadBtn;
     private ImageView imageView;
     private View fragmentView;
     String mCurrentPhotoPath;
     private File imageFile;
+    Report report;
+    //    private File file;
     private Uri selectedImageUri;
     static final int REQUEST_IMAGE_CAPTURE = 1;
-    static final int REQUEST_TAKE_PHOTO = 1;
     private static final int GALLERY_REQUEST = 100;
     private static final int GALLERY_PERMISSION_REQUEST = 200;
 
@@ -86,25 +103,22 @@ public class HomeFragment extends Fragment implements View.OnClickListener{
 
     @Override
     public void onClick(View v) {
-        switch (v.getId()){
+        switch (v.getId()) {
             case R.id.camera_btn_frag:
                 startDialog();
                 break;
             case R.id.upload_btn_frag:
                 // do something
+                uploadimage();
                 break;
-
         }
-
-
     }
 
 
-
-    protected void startDialog(){
-        final Dialog dialog = new Dialog(getActivity());
+    protected void startDialog() {
+        final Dialog dialog = new Dialog(Objects.requireNonNull(getActivity()));
         dialog.setContentView(R.layout.custom_dialog);
-        dialog.getWindow().getAttributes().width =
+        Objects.requireNonNull(dialog.getWindow()).getAttributes().width =
                 getResources().getDisplayMetrics().widthPixels;
         Button camera = dialog.findViewById(R.id.pick_camera_Btn);
         Button gallery = dialog.findViewById(R.id.pick_gallery_Btn);
@@ -151,7 +165,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener{
     private void openCamera() {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         // Ensure that there's a camera activity to handle the intent
-        if (takePictureIntent.resolveActivity(getActivity().getPackageManager()) != null) {
+        if (takePictureIntent.resolveActivity(Objects.requireNonNull(getActivity()).getPackageManager()) != null) {
             // Create the File where the photo should go
             File photoFile = null;
             try {
@@ -175,7 +189,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener{
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == GALLERY_REQUEST && resultCode == Activity.RESULT_OK) {
             selectedImageUri = data.getData();
-            if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+            if (ActivityCompat.checkSelfPermission(Objects.requireNonNull(getActivity()), Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
                 readFileFromSelectedURI();
             } else {
                 ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, GALLERY_PERMISSION_REQUEST);
@@ -186,7 +200,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener{
     }
 
     private void readFileFromSelectedURI() {
-        Cursor cursor = getActivity().getContentResolver().query(selectedImageUri, new String[]{MediaStore.Images.Media.DATA}, null, null, null);
+        Cursor cursor = Objects.requireNonNull(getActivity()).getContentResolver().query(selectedImageUri, new String[]{MediaStore.Images.Media.DATA}, null, null, null);
         if (cursor != null) {
             cursor.moveToFirst();
             String imagePath = cursor.getString(0);
@@ -226,7 +240,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener{
         // Create an image file name
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.ENGLISH).format(new Date());
         String imageFileName = "JPEG_" + timeStamp + "_";
-        File storageDir = getActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File storageDir = Objects.requireNonNull(getActivity()).getExternalFilesDir(Environment.DIRECTORY_PICTURES);
         File image = File.createTempFile(
                 imageFileName,  /* prefix */
                 ".jpg",         /* suffix */
@@ -251,7 +265,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener{
         int photoH = bmOptions.outHeight;
 
         // Determine how much to scale down the image
-        int scaleFactor = Math.min(photoW/targetW, photoH/targetH);
+        int scaleFactor = Math.min(photoW / targetW, photoH / targetH);
 
         // Decode the image file into a Bitmap sized to fill the View
         bmOptions.inJustDecodeBounds = false;
@@ -262,4 +276,64 @@ public class HomeFragment extends Fragment implements View.OnClickListener{
         imageView.setImageBitmap(bitmap);
     }
 
+    private void uploadimage() {
+        MultipartBody.Part partImage = null;
+//        final ResultBottomSheetDialog bottomSheetDialog = new ResultBottomSheetDialog();
+        if (mCurrentPhotoPath != null) {
+            File file = new File(mCurrentPhotoPath);
+            // Parsing any Media type file
+            RequestBody reqBody = RequestBody.create(MediaType.parse("multipart/form-file"), file);
+            partImage = MultipartBody.Part.createFormData("image", file.getName(), reqBody);
+        }
+        SkinAPI api = ConnectionManager.getApiServices();
+        Call<MyResponse> call = api.uploadImage(partImage);
+        call.enqueue(new Callback<MyResponse>() {
+            @Override
+            public void onResponse(Call<MyResponse> call, Response<MyResponse> response) {
+                if (response.isSuccessful()) {
+                    if (response.body() != null) {
+                        MyResponse myResponse = response.body();
+                        assert myResponse != null;
+                        Toast.makeText(getActivity(), "Your Key Is " + myResponse.getKey(), Toast.LENGTH_SHORT).show();
+                        DatabaseManager.getInstance(getActivity()).insertReport(new Report(getCurrentDate(), myResponse.getKey()));
+                        DatabaseManager.getInstance(getActivity()).insertMessage(new Messages(myResponse.getMessage(),getCurrentDate()));
+                    }
+                } else {
+                    Toast.makeText(getActivity(), "problem uploading image", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<MyResponse> call, Throwable t) {
+                Log.v("Response gotten is", t.getMessage());
+            }
+        });
+    }
+
+    private String getCurrentDate() {
+        Calendar calendar = Calendar.getInstance();
+
+        return DateFormat.getDateInstance().format(calendar.getTime());
+    }
+
+
+//        @Override
+//        public void onSaveInstanceState(@NonNull Bundle outState) {
+//            super.onSaveInstanceState(outState);
+//            outState.putString("Path", mCurrentPhotoPath);
+//            outState.putSerializable("File", imageFile);
+//        }
+//
+//    @Override
+//    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+//        super.onActivityCreated(savedInstanceState);
+//        if (savedInstanceState != null) {
+//            mCurrentPhotoPath = savedInstanceState.getString("Path");
+//            imageFile = (File) savedInstanceState.getSerializable("File");
+//        }
+//
+//    }
+
 }
+
+
