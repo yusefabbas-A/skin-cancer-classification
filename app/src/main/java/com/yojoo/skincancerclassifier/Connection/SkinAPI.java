@@ -18,7 +18,7 @@ import retrofit2.http.Query;
 public interface SkinAPI {
 
     @GET("/api/skins/reports/1?")
-    Call<SampleResult> getSamples();
+    Call<SampleResult> getSamples(@Query("job_key") String key);
 
     @Multipart
     @POST("/api/skins/subjects/")

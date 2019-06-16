@@ -71,6 +71,11 @@ public class DatabaseManager {
         return reportDao.UpdateClass(Rid, classification);
     }
 
+    @Query("SELECT jop_key FROM Report WHERE id = :Rid")
+    public String getKey(int Rid) {
+        return reportDao.getKey(Rid);
+    }
+
     //MessagesDao Delegate Methods
 
     @Insert

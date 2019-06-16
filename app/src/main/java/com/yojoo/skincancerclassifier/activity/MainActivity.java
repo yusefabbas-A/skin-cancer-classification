@@ -25,17 +25,19 @@ import com.yojoo.skincancerclassifier.fragments.InboxFragment;
 import com.yojoo.skincancerclassifier.fragments.ResultBottomSheetDialog;
 import com.yojoo.skincancerclassifier.fragments.ResultListFragment;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements ResultListFragment.SenderFragmentListener {
     private static final String TAG = "MainActivity";
 
     private SectionsPageAdapter mSectionsPagerAdapter;
     private ViewPager mViewPager;
+    private ResultListFragment resultListFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Log.d(TAG,"OnCreate Starting");
+        resultListFragment = new ResultListFragment();
 
         mSectionsPagerAdapter = new SectionsPageAdapter(getSupportFragmentManager());
 
@@ -61,7 +63,7 @@ public class MainActivity extends AppCompatActivity {
     private void setupViewPager(ViewPager viewpager){
         SectionsPageAdapter adapter = new SectionsPageAdapter(getSupportFragmentManager());
         adapter.addFragment(new HomeFragment(),"Home");
-        adapter.addFragment(new ResultListFragment(),"Results");
+        adapter.addFragment(resultListFragment,"Results");
         adapter.addFragment(new InboxFragment(),"Messages");
         viewpager.setAdapter(adapter);
     }
@@ -94,6 +96,12 @@ public class MainActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
     }
 
+    @Override
+    public void positionSender(int positionId) {
+        if (resultListFragment instanceof ResultBottomSheetDialog.ReceiveIdInterface){
+            ((ResultBottomSheetDialog.ReceiveIdInterface) resultListFragment).receiveId(positionId);
+        }
+    }
 }
 //        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 //        setSupportActionBar(toolbar);

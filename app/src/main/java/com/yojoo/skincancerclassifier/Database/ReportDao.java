@@ -31,5 +31,9 @@ public interface ReportDao {
     @Query("UPDATE Report SET Classification = :classification WHERE id = :Rid")
     int UpdateClass(long Rid, String classification);
 
+    @Query("SELECT jop_key FROM Report WHERE id = :Rid")
+    String getKey(int Rid);
+
+
 }
 

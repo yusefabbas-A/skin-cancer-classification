@@ -1,5 +1,6 @@
 package com.yojoo.skincancerclassifier.Data;
 
+import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.PrimaryKey;
@@ -15,6 +16,7 @@ public class Report {
     @PrimaryKey(autoGenerate = true)
     private int id;
 
+    @ColumnInfo(name = "jop_key")
     private String Key;
 
     private String Classification;

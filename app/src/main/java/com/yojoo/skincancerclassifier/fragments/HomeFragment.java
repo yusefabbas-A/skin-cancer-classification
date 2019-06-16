@@ -2,7 +2,6 @@ package com.yojoo.skincancerclassifier.fragments;
 
 
 import android.Manifest;
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
@@ -12,12 +11,10 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.FileProvider;
@@ -29,18 +26,14 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
 import com.yojoo.skincancerclassifier.BuildConfig;
 import com.yojoo.skincancerclassifier.Connection.ConnectionManager;
-import com.yojoo.skincancerclassifier.Connection.SkinAPI;
 import com.yojoo.skincancerclassifier.Data.Messages;
 import com.yojoo.skincancerclassifier.Data.MyResponse;
 import com.yojoo.skincancerclassifier.Data.Report;
 import com.yojoo.skincancerclassifier.Database.DatabaseManager;
 import com.yojoo.skincancerclassifier.R;
-import com.yojoo.skincancerclassifier.activity.HomeActivity;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -51,7 +44,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Objects;
-import java.util.logging.Logger;
 
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -60,14 +52,10 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-import static android.app.Activity.RESULT_CANCELED;
-import static android.support.constraint.Constraints.TAG;
-import static android.support.v4.provider.FontsContractCompat.FontRequestCallback.RESULT_OK;
-
 /**
  * A simple {@link Fragment} subclass.
  */
-public class HomeFragment extends Fragment implements View.OnClickListener {
+public class HomeFragment extends Fragment implements View.OnClickListener, Callback<MyResponse> {
     private Button CameraBtn, UploadBtn;
     private ImageView imageView;
     private View fragmentView;
@@ -285,36 +273,36 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
             RequestBody reqBody = RequestBody.create(MediaType.parse("multipart/form-file"), file);
             partImage = MultipartBody.Part.createFormData("image", file.getName(), reqBody);
         }
-        SkinAPI api = ConnectionManager.getApiServices();
-        Call<MyResponse> call = api.uploadImage(partImage);
-        call.enqueue(new Callback<MyResponse>() {
-            @Override
-            public void onResponse(Call<MyResponse> call, Response<MyResponse> response) {
-                if (response.isSuccessful()) {
-                    if (response.body() != null) {
-                        MyResponse myResponse = response.body();
-                        assert myResponse != null;
-                        Toast.makeText(getActivity(), "Your Key Is " + myResponse.getKey(), Toast.LENGTH_SHORT).show();
-                        DatabaseManager.getInstance(getActivity()).insertReport(new Report(getCurrentDate(), myResponse.getKey()));
-                        DatabaseManager.getInstance(getActivity()).insertMessage(new Messages(myResponse.getMessage(),getCurrentDate()));
-                    }
-                } else {
-                    Toast.makeText(getActivity(), "problem uploading image", Toast.LENGTH_SHORT).show();
-                }
-            }
 
-            @Override
-            public void onFailure(Call<MyResponse> call, Throwable t) {
-                Log.v("Response gotten is", t.getMessage());
+        ConnectionManager.getInstance().uploadImage(partImage).enqueue(this);
+
+    }
+
+    @Override
+    public void onResponse(Call<MyResponse> call, Response<MyResponse> response) {
+        if (response.isSuccessful()) {
+            if (response.body() != null) {
+                MyResponse myResponse = response.body();
+                assert myResponse != null;
+                Toast.makeText(getActivity(), "Your Key Is " + myResponse.getKey(), Toast.LENGTH_SHORT).show();
+                DatabaseManager.getInstance(getActivity()).insertReport(new Report(getCurrentDate(), myResponse.getKey()));
+                DatabaseManager.getInstance(getActivity()).insertMessage(new Messages(myResponse.getMessage(), getCurrentDate()));
             }
-        });
+        } else {
+            Toast.makeText(getActivity(), "problem uploading image", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    public void onFailure(Call<MyResponse> call, Throwable t) {
+        Log.v("Response gotten is", t.getMessage());
     }
 
     private String getCurrentDate() {
         Calendar calendar = Calendar.getInstance();
-
         return DateFormat.getDateInstance().format(calendar.getTime());
     }
+}
 
 
 //        @Override
@@ -334,6 +322,31 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 //
 //    }
 
-}
+
+    //        SkinAPI api = ConnectionManager.getApiServices();
+//        Call<MyResponse> call = api.uploadImage(partImage);
+//        call.enqueue(new Callback<MyResponse>() {
+//            @Override
+//            public void onResponse(Call<MyResponse> call, Response<MyResponse> response) {
+//                if (response.isSuccessful()) {
+//                    if (response.body() != null) {
+//                        MyResponse myResponse = response.body();
+//                        assert myResponse != null;
+//                        Toast.makeText(getActivity(), "Your Key Is " + myResponse.getKey(), Toast.LENGTH_SHORT).show();
+//                        DatabaseManager.getInstance(getActivity()).insertReport(new Report(getCurrentDate(), myResponse.getKey()));
+//                        DatabaseManager.getInstance(getActivity()).insertMessage(new Messages(myResponse.getMessage(),getCurrentDate()));
+//                    }
+//                } else {
+//                    Toast.makeText(getActivity(), "problem uploading image", Toast.LENGTH_SHORT).show();
+//                }
+//            }
+//
+//            @Override
+//            public void onFailure(Call<MyResponse> call, Throwable t) {
+//                Log.v("Response gotten is", t.getMessage());
+//            }
+//        });
+
+
 
 

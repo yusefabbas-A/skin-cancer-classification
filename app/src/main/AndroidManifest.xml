@@ -28,12 +28,6 @@
         <activity
             android:name=".activity.StartActivity"
             android:label="@string/theStart" />
-        <activity
-            android:name=".activity.HomeActivity"
-            android:label="@string/home" />
-        <activity
-            android:name=".activity.ResultActivity"
-            android:label="@string/result" />
 
         <provider
             android:name="android.support.v4.content.FileProvider"

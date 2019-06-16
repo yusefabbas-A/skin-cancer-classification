@@ -13,8 +13,11 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
+import com.yojoo.skincancerclassifier.Connection.ConnectionManager;
 import com.yojoo.skincancerclassifier.Data.Report;
+import com.yojoo.skincancerclassifier.Data.SampleResult;
 import com.yojoo.skincancerclassifier.Database.DatabaseManager;
 import com.yojoo.skincancerclassifier.R;
 import com.yojoo.skincancerclassifier.adabter.ReportAdapter;
@@ -23,19 +26,23 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 /**
  * A simple {@link Fragment} subclass.
  */
-public class ResultListFragment extends Fragment {
+public class ResultListFragment extends Fragment implements ResultBottomSheetDialog.ReceiveIdInterface, Callback<SampleResult> {
 
     private RecyclerView recyclerView;
-    private RecyclerView.Adapter adapter;
+    private ReportAdapter adapter;
     private RecyclerView.LayoutManager layoutManager;
     private View fragmentView;
-//    LocalDate date = LocalDate.now();
-//    String dates = date.toString();
-    Report report;
-    Context thisContext;
+    String theKey;
+    SenderFragmentListener Listener;
+    int positionId;
+    int nPosition;
 
 
     public ResultListFragment() {
@@ -52,7 +59,13 @@ public class ResultListFragment extends Fragment {
 //        ArrayList<Report> reportList = new ArrayList<>();
 //        reportList.add(new Report("1",dates,"sad"));
 
-        List<Report> reports = DatabaseManager.getInstance(getActivity()).getAllReports();
+        buildRecyclerView();
+
+        return fragmentView;
+    }
+
+    public void buildRecyclerView(){
+       List<Report> reports = DatabaseManager.getInstance(getActivity()).getAllReports();
 
         recyclerView = fragmentView.findViewById(R.id.result_list);
         recyclerView.setHasFixedSize(true);
@@ -61,9 +74,68 @@ public class ResultListFragment extends Fragment {
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(adapter);
         adapter.notifyDataSetChanged();
+        adapter.setOnItemClickListener(new ReportAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(int position) {
+                positionId = position +1;
+                theKey = DatabaseManager.getInstance(getActivity()).getKey(positionId);
+                Toast.makeText(getActivity(), "position"+positionId, Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), "the key is"+ theKey, Toast.LENGTH_SHORT).show();
+                Listener.positionSender(positionId);
+                callResult();
+
+            }
+        });
+    }
+
+    public void callResult(){
+        ConnectionManager.getInstance().getSamples(theKey).enqueue(this);
+    }
 
 
-        return fragmentView;
+    @Override
+    public void onResponse(Call<SampleResult> call, Response<SampleResult> response) {
+        if (response.isSuccessful()){
+            if (response.body() != null) {
+                SampleResult sampleResult = response.body();
+                assert sampleResult != null;
+                DatabaseManager.getInstance(getActivity()).UpdateClass(positionId, sampleResult.getClassifiedAs());
+                adapter.notifyItemChanged(nPosition);
+//                ResultBottomSheetDialog bottomSheetDialog = new ResultBottomSheetDialog();
+//                bottomSheetDialog.show(getActivity().getSupportFragmentManager(), "myBottomSheet");
+            }
+        }
+    }
+
+    @Override
+    public void onFailure(Call<SampleResult> call, Throwable t) {
+        Toast.makeText(getActivity(), "ERROR", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void receiveId(int id) {
+        positionId = id;
+    }
+
+    public interface SenderFragmentListener{
+        void positionSender(int positionId);
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (context instanceof SenderFragmentListener){
+            Listener = (SenderFragmentListener) context;
+        } else {
+            throw new RuntimeException(context.toString()+"must implement SenderFragmentListener");
+        }
+
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        Listener = null;
     }
 
 }
