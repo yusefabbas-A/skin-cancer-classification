@@ -18,6 +18,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.yojoo.skincancerclassifier.R;
 import com.yojoo.skincancerclassifier.adabter.SectionsPageAdapter;
 import com.yojoo.skincancerclassifier.fragments.HomeFragment;
@@ -27,7 +28,7 @@ import com.yojoo.skincancerclassifier.fragments.ResultListFragment;
 
 public class MainActivity extends AppCompatActivity implements ResultListFragment.SenderFragmentListener {
     private static final String TAG = "MainActivity";
-
+    private FirebaseAuth mAuth;
     private SectionsPageAdapter mSectionsPagerAdapter;
     private ViewPager mViewPager;
     private ResultListFragment resultListFragment;
@@ -37,6 +38,7 @@ public class MainActivity extends AppCompatActivity implements ResultListFragmen
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Log.d(TAG,"OnCreate Starting");
+        mAuth = FirebaseAuth.getInstance();
         resultListFragment = new ResultListFragment();
 
         mSectionsPagerAdapter = new SectionsPageAdapter(getSupportFragmentManager());
@@ -51,8 +53,9 @@ public class MainActivity extends AppCompatActivity implements ResultListFragmen
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ResultBottomSheetDialog bottomSheetDialog = new ResultBottomSheetDialog();
-                bottomSheetDialog.show(getSupportFragmentManager(),"myBottomSheet");
+                signOut();
+//                ResultBottomSheetDialog bottomSheetDialog = new ResultBottomSheetDialog();
+//                bottomSheetDialog.show(getSupportFragmentManager(),"myBottomSheet");
 //                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
 //                        .setAction("Action", null).show();
             }
@@ -101,6 +104,21 @@ public class MainActivity extends AppCompatActivity implements ResultListFragmen
         if (resultListFragment instanceof ResultBottomSheetDialog.ReceiveIdInterface){
             ((ResultBottomSheetDialog.ReceiveIdInterface) resultListFragment).receiveId(positionId);
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        Intent intent = new Intent(MainActivity.this,StartActivity.class);
+        startActivity(intent);
+        finish();
+    }
+
+    public void signOut(){
+        mAuth.signOut();
+        Intent intent = new Intent(getApplicationContext(), StartActivity.class);
+        startActivity(intent);
+        finish();
     }
 }
 //        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);

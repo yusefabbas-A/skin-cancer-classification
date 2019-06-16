@@ -29,12 +29,10 @@ dependencies {
     implementation 'com.android.support:recyclerview-v7:27.1.1'
     implementation 'com.android.support:cardview-v7:27.1.1'
     implementation 'com.github.bumptech.glide:glide:4.9.0'
-    implementation 'com.afollestad.material-dialogs:core:0.9.6.0'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
-
+    implementation 'com.google.firebase:firebase-auth:16.0.3'
     implementation 'com.squareup.retrofit2:retrofit:2.5.0'
     implementation 'com.squareup.retrofit2:converter-gson:2.5.0'
-
     implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
     annotationProcessor "android.arch.persistence.room:compiler:$room_version"
     implementation "android.arch.persistence.room:runtime:$room_version"
@@ -43,3 +41,4 @@ dependencies {
     })
 
 }
+apply plugin: 'com.google.gms.google-services'

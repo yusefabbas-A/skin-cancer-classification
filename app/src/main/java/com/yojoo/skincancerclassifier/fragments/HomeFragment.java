@@ -302,6 +302,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Call
         Calendar calendar = Calendar.getInstance();
         return DateFormat.getDateInstance().format(calendar.getTime());
     }
+
+
 }
 
 

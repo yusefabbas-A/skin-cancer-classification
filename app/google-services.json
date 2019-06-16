@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "538009383182",
+    "firebase_url": "https://skincancerclassifier-d54c3.firebaseio.com",
+    "project_id": "skincancerclassifier-d54c3",
+    "storage_bucket": "skincancerclassifier-d54c3.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:538009383182:android:ae275288fc8a014e",
+        "android_client_info": {
+          "package_name": "com.yojoo.skincancerclassifier"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "538009383182-kkuqe7lb42jfl51ktnoqk40798okoab5.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.yojoo.skincancerclassifier",
+            "certificate_hash": "89d884707b9f3b4811309cb04a81a12719250cfa"
+          }
+        },
+        {
+          "client_id": "538009383182-2lurv94vu455p93rj11c9r90q1qp5njr.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDsRhnAkO1qaTcQPr0I7E1iPR0DiBVBtnA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "538009383182-2lurv94vu455p93rj11c9r90q1qp5njr.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
