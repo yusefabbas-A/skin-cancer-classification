@@ -11,6 +11,7 @@ public class SampleResult {
     @SerializedName("id")
     @Expose
     private String id;
+
     @SerializedName("message")
     @Expose
     private String message;
@@ -45,11 +46,4 @@ public class SampleResult {
     }
 
 
-
-    @Override
-    public String toString() {
-        return "SampleResult{" +
-                "message='" + getMessage() + '\'' +
-                '}';
-    }
 }

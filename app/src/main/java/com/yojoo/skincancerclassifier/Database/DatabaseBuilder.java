@@ -6,7 +6,7 @@ import android.arch.persistence.room.RoomDatabase;
 import com.yojoo.skincancerclassifier.Data.Messages;
 import com.yojoo.skincancerclassifier.Data.Report;
 
-@Database(entities = {Report.class, Messages.class},version = 6)
+@Database(entities = {Report.class, Messages.class},version = 7)
 public abstract class DatabaseBuilder extends RoomDatabase {
 
     public abstract ReportDao getReportDao();

@@ -5,9 +5,11 @@ import android.app.Activity;
 import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -16,14 +18,17 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.yojoo.skincancerclassifier.Connection.ConnectionManager;
+import com.yojoo.skincancerclassifier.Data.Messages;
 import com.yojoo.skincancerclassifier.Data.Report;
 import com.yojoo.skincancerclassifier.Data.SampleResult;
 import com.yojoo.skincancerclassifier.Database.DatabaseManager;
 import com.yojoo.skincancerclassifier.R;
 import com.yojoo.skincancerclassifier.adabter.ReportAdapter;
 
+import java.text.DateFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import retrofit2.Call;
@@ -40,9 +45,11 @@ public class ResultListFragment extends Fragment implements ResultBottomSheetDia
     private RecyclerView.LayoutManager layoutManager;
     private View fragmentView;
     String theKey;
+    String theClass;
     SenderFragmentListener Listener;
     int positionId;
     int nPosition;
+
 
 
     public ResultListFragment() {
@@ -55,12 +62,7 @@ public class ResultListFragment extends Fragment implements ResultBottomSheetDia
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         fragmentView = inflater.inflate(R.layout.fragment_result_list, container, false);
-
-//        ArrayList<Report> reportList = new ArrayList<>();
-//        reportList.add(new Report("1",dates,"sad"));
-
         buildRecyclerView();
-
         return fragmentView;
     }
 
@@ -100,7 +102,14 @@ public class ResultListFragment extends Fragment implements ResultBottomSheetDia
                 SampleResult sampleResult = response.body();
                 assert sampleResult != null;
                 DatabaseManager.getInstance(getActivity()).UpdateClass(positionId, sampleResult.getClassifiedAs());
-                adapter.notifyItemChanged(nPosition);
+                theClass =  DatabaseManager.getInstance(getActivity()).getClassification(positionId);
+                if (theClass.isEmpty()){
+                    DatabaseManager.getInstance(getActivity()).insertMessage(new Messages(sampleResult.getMessage(),getCurrentDate()));
+                }
+                else {
+                    Toast.makeText(getActivity(), "Already Got Message", Toast.LENGTH_SHORT).show();
+                }
+
 //                ResultBottomSheetDialog bottomSheetDialog = new ResultBottomSheetDialog();
 //                bottomSheetDialog.show(getActivity().getSupportFragmentManager(), "myBottomSheet");
             }
@@ -129,13 +138,22 @@ public class ResultListFragment extends Fragment implements ResultBottomSheetDia
         } else {
             throw new RuntimeException(context.toString()+"must implement SenderFragmentListener");
         }
-
     }
+
 
     @Override
     public void onDetach() {
         super.onDetach();
         Listener = null;
     }
+    private String getCurrentDate() {
+        Calendar calendar = Calendar.getInstance();
+        return DateFormat.getDateInstance().format(calendar.getTime());
+    }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        adapter.notifyDataSetChanged();
+    }
 }

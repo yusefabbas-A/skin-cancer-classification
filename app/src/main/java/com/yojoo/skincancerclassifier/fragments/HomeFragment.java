@@ -83,9 +83,11 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Call
         CameraBtn = fragmentView.findViewById(R.id.camera_btn_frag);
         UploadBtn = fragmentView.findViewById(R.id.upload_btn_frag);
         imageView = fragmentView.findViewById(R.id.img_frag);
-
         CameraBtn.setOnClickListener(this);
         UploadBtn.setOnClickListener(this);
+
+
+
         return fragmentView;
     }
 
@@ -284,9 +286,11 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Call
             if (response.body() != null) {
                 MyResponse myResponse = response.body();
                 assert myResponse != null;
-                Toast.makeText(getActivity(), "Your Key Is " + myResponse.getKey(), Toast.LENGTH_SHORT).show();
+//                Toast.makeText(getActivity(), "Your Key Is " + myResponse.getKey(), Toast.LENGTH_SHORT).show();
                 DatabaseManager.getInstance(getActivity()).insertReport(new Report(getCurrentDate(), myResponse.getKey()));
                 DatabaseManager.getInstance(getActivity()).insertMessage(new Messages(myResponse.getMessage(), getCurrentDate()));
+                imageView.setImageResource(0);
+                Toast.makeText(getActivity(), "Image sent Successfully", Toast.LENGTH_SHORT).show();
             }
         } else {
             Toast.makeText(getActivity(), "problem uploading image", Toast.LENGTH_SHORT).show();
@@ -296,6 +300,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Call
     @Override
     public void onFailure(Call<MyResponse> call, Throwable t) {
         Log.v("Response gotten is", t.getMessage());
+        Toast.makeText(getActivity(), "ERROR", Toast.LENGTH_SHORT).show();
     }
 
     private String getCurrentDate() {

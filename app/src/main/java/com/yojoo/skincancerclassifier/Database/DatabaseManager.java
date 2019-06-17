@@ -67,13 +67,18 @@ public class DatabaseManager {
     }
 
     @Query("UPDATE Report SET Classification = :classification WHERE id = :Rid")
-    public int UpdateClass(long Rid, String classification) {
-        return reportDao.UpdateClass(Rid, classification);
+    public void UpdateClass(int Rid, String classification) {
+        reportDao.UpdateClass(Rid, classification);
     }
 
     @Query("SELECT jop_key FROM Report WHERE id = :Rid")
     public String getKey(int Rid) {
         return reportDao.getKey(Rid);
+    }
+
+    @Query("SELECT Classification FROM Report WHERE id = :Rid")
+    public String getClassification(int Rid) {
+        return reportDao.getClassification(Rid);
     }
 
     //MessagesDao Delegate Methods

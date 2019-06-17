@@ -29,11 +29,12 @@ public interface ReportDao {
     void delete(Report report);
 
     @Query("UPDATE Report SET Classification = :classification WHERE id = :Rid")
-    int UpdateClass(long Rid, String classification);
+    void UpdateClass(int Rid, String classification);
 
     @Query("SELECT jop_key FROM Report WHERE id = :Rid")
     String getKey(int Rid);
 
-
+    @Query("SELECT Classification FROM Report WHERE id = :Rid")
+    String getClassification(int Rid);
 }
 

@@ -15,7 +15,7 @@ import retrofit2.http.POST;
 public class ConnectionManager {
     private static ConnectionManager connectionManager;
     private SkinAPI api;
-
+//http://10.0.2.2:3000 https://7ef5fa43.ngrok.io
     private ConnectionManager (){
         Retrofit retrofit = new Retrofit.Builder()
                     .baseUrl("http://10.0.2.2:3000")

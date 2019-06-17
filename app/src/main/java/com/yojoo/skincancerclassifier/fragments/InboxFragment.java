@@ -1,13 +1,19 @@
 package com.yojoo.skincancerclassifier.fragments;
 
 
+import android.content.Context;
 import android.os.Bundle;
+import android.os.Handler;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.yojoo.skincancerclassifier.Data.Messages;
 import com.yojoo.skincancerclassifier.Data.Report;
@@ -35,6 +41,7 @@ public class InboxFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         fragmentView = inflater.inflate(R.layout.fragment_inbox, container, false);
+
         List<Messages> messages = DatabaseManager.getInstance(getActivity()).getAllMessages();
 
         recyclerView = fragmentView.findViewById(R.id.messages_list);
@@ -44,7 +51,14 @@ public class InboxFragment extends Fragment {
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(adapter);
 
+
+
         return fragmentView;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        adapter.notifyDataSetChanged();
+    }
 }

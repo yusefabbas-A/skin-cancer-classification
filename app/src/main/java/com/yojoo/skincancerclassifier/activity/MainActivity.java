@@ -26,6 +26,8 @@ import com.yojoo.skincancerclassifier.fragments.InboxFragment;
 import com.yojoo.skincancerclassifier.fragments.ResultBottomSheetDialog;
 import com.yojoo.skincancerclassifier.fragments.ResultListFragment;
 
+import java.util.Objects;
+
 public class MainActivity extends AppCompatActivity implements ResultListFragment.SenderFragmentListener {
     private static final String TAG = "MainActivity";
     private FirebaseAuth mAuth;
@@ -49,6 +51,32 @@ public class MainActivity extends AppCompatActivity implements ResultListFragmen
         TabLayout tabLayout = findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
 
+        Objects.requireNonNull(mViewPager.getAdapter()).notifyDataSetChanged();
+
+        mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                Fragment fragment = ((SectionsPageAdapter)mViewPager.getAdapter()).getItem(position);
+
+                if (position ==1 && fragment != null)
+                {
+                    fragment.onResume();
+                }
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
+
+
+
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -69,6 +97,7 @@ public class MainActivity extends AppCompatActivity implements ResultListFragmen
         adapter.addFragment(resultListFragment,"Results");
         adapter.addFragment(new InboxFragment(),"Messages");
         viewpager.setAdapter(adapter);
+
     }
 
 
