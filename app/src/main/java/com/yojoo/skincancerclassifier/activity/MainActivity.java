@@ -17,8 +17,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.yojoo.skincancerclassifier.Data.Report;
 import com.yojoo.skincancerclassifier.R;
 import com.yojoo.skincancerclassifier.adabter.SectionsPageAdapter;
 import com.yojoo.skincancerclassifier.fragments.HomeFragment;
@@ -26,14 +28,16 @@ import com.yojoo.skincancerclassifier.fragments.InboxFragment;
 import com.yojoo.skincancerclassifier.fragments.ResultBottomSheetDialog;
 import com.yojoo.skincancerclassifier.fragments.ResultListFragment;
 
+import java.util.List;
 import java.util.Objects;
 
-public class MainActivity extends AppCompatActivity implements ResultListFragment.SenderFragmentListener {
+import static android.support.v4.view.PagerAdapter.POSITION_UNCHANGED;
+
+public class MainActivity extends AppCompatActivity implements HomeFragment.DataListener{
     private static final String TAG = "MainActivity";
     private FirebaseAuth mAuth;
     private SectionsPageAdapter mSectionsPagerAdapter;
     private ViewPager mViewPager;
-    private ResultListFragment resultListFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,40 +45,16 @@ public class MainActivity extends AppCompatActivity implements ResultListFragmen
         setContentView(R.layout.activity_main);
         Log.d(TAG,"OnCreate Starting");
         mAuth = FirebaseAuth.getInstance();
-        resultListFragment = new ResultListFragment();
-
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
         mSectionsPagerAdapter = new SectionsPageAdapter(getSupportFragmentManager());
-
         mViewPager = findViewById(R.id.container);
-        setupViewPager(mViewPager);
-
+        mViewPager.setAdapter(mSectionsPagerAdapter);
         TabLayout tabLayout = findViewById(R.id.tabs);
-        tabLayout.setupWithViewPager(mViewPager);
-
-        Objects.requireNonNull(mViewPager.getAdapter()).notifyDataSetChanged();
-
-        mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-            @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
-            }
-
-            @Override
-            public void onPageSelected(int position) {
-                Fragment fragment = ((SectionsPageAdapter)mViewPager.getAdapter()).getItem(position);
-
-                if (position ==1 && fragment != null)
-                {
-                    fragment.onResume();
-                }
-            }
-
-            @Override
-            public void onPageScrollStateChanged(int state) {
-
-            }
-        });
-
+        mViewPager.addOnPageChangeListener(
+                new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
+        tabLayout.addOnTabSelectedListener(
+                new TabLayout.ViewPagerOnTabSelectedListener(mViewPager));
 
 
         FloatingActionButton fab = findViewById(R.id.fab);
@@ -91,36 +71,14 @@ public class MainActivity extends AppCompatActivity implements ResultListFragmen
 
     }
 
-    private void setupViewPager(ViewPager viewpager){
-        SectionsPageAdapter adapter = new SectionsPageAdapter(getSupportFragmentManager());
-        adapter.addFragment(new HomeFragment(),"Home");
-        adapter.addFragment(resultListFragment,"Results");
-        adapter.addFragment(new InboxFragment(),"Messages");
-        viewpager.setAdapter(adapter);
-
-    }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
+
         getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
+        return super.onCreateOptionsMenu(menu);
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -128,12 +86,6 @@ public class MainActivity extends AppCompatActivity implements ResultListFragmen
         super.onActivityResult(requestCode, resultCode, data);
     }
 
-    @Override
-    public void positionSender(int positionId) {
-        if (resultListFragment instanceof ResultBottomSheetDialog.ReceiveIdInterface){
-            ((ResultBottomSheetDialog.ReceiveIdInterface) resultListFragment).receiveId(positionId);
-        }
-    }
 
     @Override
     public void onBackPressed() {
@@ -149,6 +101,17 @@ public class MainActivity extends AppCompatActivity implements ResultListFragmen
         startActivity(intent);
         finish();
     }
+
+
+    @Override
+    public void onDataReceived(List<Report> reports) {
+        ResultListFragment fragment = (ResultListFragment) mSectionsPagerAdapter.getItem(mViewPager.getCurrentItem()+1);
+        if (fragment != null){
+            fragment.receiveFromHome(reports);
+            Log.d(TAG,"receivefromhome");
+        }
+    }
+
 }
 //        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 //        setSupportActionBar(toolbar);

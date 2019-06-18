@@ -14,7 +14,7 @@ import java.util.List;
 public interface ReportDao {
 
     @Insert
-    void insertReport(Report... report);
+    void insertReport(Report report);
 
     @Query("SELECT * FROM Report")
     List<Report> getAllReports();

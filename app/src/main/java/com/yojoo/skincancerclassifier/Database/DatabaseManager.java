@@ -42,7 +42,7 @@ public class DatabaseManager {
     //ReportDao Delegate Methods
 
     @Insert
-    public void insertReport(Report... report) {
+    public void insertReport(Report report) {
         reportDao.insertReport(report);
     }
 

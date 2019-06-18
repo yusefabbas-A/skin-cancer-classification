@@ -17,6 +17,7 @@ import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.content.FileProvider;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -33,6 +34,8 @@ import com.yojoo.skincancerclassifier.Data.MyResponse;
 import com.yojoo.skincancerclassifier.Data.Report;
 import com.yojoo.skincancerclassifier.Database.DatabaseManager;
 import com.yojoo.skincancerclassifier.R;
+import com.yojoo.skincancerclassifier.activity.MainActivity;
+import com.yojoo.skincancerclassifier.adabter.SectionsPageAdapter;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -42,6 +45,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
@@ -61,14 +65,14 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Call
     private View fragmentView;
     String mCurrentPhotoPath;
     private File imageFile;
-    Report report;
-    //    private File file;
+    private String theKey;
+    DataListener callBack;
+    Dialog dialog;
     private Uri selectedImageUri;
     static final int REQUEST_IMAGE_CAPTURE = 1;
     private static final int GALLERY_REQUEST = 100;
     private static final int GALLERY_PERMISSION_REQUEST = 200;
 
-    Context context = getActivity();
 
     public HomeFragment() {
         // Required empty public constructor
@@ -83,6 +87,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Call
         CameraBtn = fragmentView.findViewById(R.id.camera_btn_frag);
         UploadBtn = fragmentView.findViewById(R.id.upload_btn_frag);
         imageView = fragmentView.findViewById(R.id.img_frag);
+
         CameraBtn.setOnClickListener(this);
         UploadBtn.setOnClickListener(this);
 
@@ -106,7 +111,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Call
 
 
     protected void startDialog() {
-        final Dialog dialog = new Dialog(Objects.requireNonNull(getActivity()));
+        dialog = new Dialog((getActivity()));
         dialog.setContentView(R.layout.custom_dialog);
         Objects.requireNonNull(dialog.getWindow()).getAttributes().width =
                 getResources().getDisplayMetrics().widthPixels;
@@ -215,13 +220,13 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Call
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 readFileFromSelectedURI();
             } else {
-                Toast.makeText(context, R.string.cant_read_selected_image, Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), R.string.cant_read_selected_image, Toast.LENGTH_SHORT).show();
             }
         } else {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 openCamera();
             } else {
-                Toast.makeText(context, R.string.can_not_open_camera, Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), R.string.can_not_open_camera, Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -286,11 +291,12 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Call
             if (response.body() != null) {
                 MyResponse myResponse = response.body();
                 assert myResponse != null;
-//                Toast.makeText(getActivity(), "Your Key Is " + myResponse.getKey(), Toast.LENGTH_SHORT).show();
-                DatabaseManager.getInstance(getActivity()).insertReport(new Report(getCurrentDate(), myResponse.getKey()));
+                theKey = myResponse.getKey();
+                callBack.onDataReceived(AddReport());
                 DatabaseManager.getInstance(getActivity()).insertMessage(new Messages(myResponse.getMessage(), getCurrentDate()));
                 imageView.setImageResource(0);
                 Toast.makeText(getActivity(), "Image sent Successfully", Toast.LENGTH_SHORT).show();
+//                goToResultList();
             }
         } else {
             Toast.makeText(getActivity(), "problem uploading image", Toast.LENGTH_SHORT).show();
@@ -308,7 +314,38 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Call
         return DateFormat.getDateInstance().format(calendar.getTime());
     }
 
+//    private void goToResultList(){
+//        ResultListFragment resultListFragment = new ResultListFragment();
+//        FragmentManager manager = getFragmentManager();
+//        manager.beginTransaction().replace(R.id.container,resultListFragment).commit();
+//    }
 
+    public List<Report> AddReport(){
+        Report report = new Report(getCurrentDate(), theKey);
+        DatabaseManager.getInstance(getActivity()).insertReport(report);
+        List<Report> reports = DatabaseManager.getInstance(getActivity()).getAllReports();
+        dialog.dismiss();
+//        Intent refresh = new Intent(getActivity(), MainActivity.class);
+//        startActivity(refresh);
+//        getActivity().finish();
+        return reports;
+    }
+
+
+    public interface DataListener{
+        public void onDataReceived(List<Report> reports);
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        try {
+            callBack = (DataListener) context;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(context.toString()
+                    + " must implement DataListener");
+        }
+    }
 }
 
 
