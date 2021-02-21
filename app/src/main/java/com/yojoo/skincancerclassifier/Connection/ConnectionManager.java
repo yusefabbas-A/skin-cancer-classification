@@ -32,7 +32,7 @@ public class ConnectionManager {
                 .build();
 
         Retrofit retrofit = new Retrofit.Builder()
-                    .baseUrl("https://d4447a0d.ngrok.io")
+                    .baseUrl("http://10.0.2.2:3000")
                     .addConverterFactory(GsonConverterFactory.create())
                     .client(httpClient)
                     .build();

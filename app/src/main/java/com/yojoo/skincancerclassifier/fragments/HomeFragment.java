@@ -325,9 +325,9 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Call
         DatabaseManager.getInstance(getActivity()).insertReport(report);
         List<Report> reports = DatabaseManager.getInstance(getActivity()).getAllReports();
         dialog.dismiss();
-//        Intent refresh = new Intent(getActivity(), MainActivity.class);
-//        startActivity(refresh);
-//        getActivity().finish();
+        Intent refresh = new Intent(getActivity(), MainActivity.class);
+        startActivity(refresh);
+        getActivity().finish();
         return reports;
     }
 

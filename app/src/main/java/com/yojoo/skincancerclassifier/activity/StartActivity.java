@@ -15,10 +15,6 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.yojoo.skincancerclassifier.R;
 
-import java.util.Objects;
-
-import androidx.annotation.NonNull;
-
 public class StartActivity extends AppCompatActivity implements View.OnClickListener{
     private FirebaseAuth mAuth;
 
@@ -86,11 +82,18 @@ public class StartActivity extends AppCompatActivity implements View.OnClickList
     private void login(){
         String usernameVal = emailEdt.getText().toString();
         String passwordVal = passwordEdt.getText().toString();
+        if (usernameVal.isEmpty()){
+            emailEdt.setError("Enter username");
+            emailEdt.requestFocus();
+        }else if (passwordVal.isEmpty()){
+            passwordEdt.setError("Enter Password");
+            passwordEdt.requestFocus();
+        }
         if(!usernameVal.equals("")&&!passwordVal.equals("")){
             mAuth.signInWithEmailAndPassword(usernameVal, passwordVal)
                     .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                         @Override
-                        public void onComplete(@NonNull Task<AuthResult> task) {
+                        public void onComplete(Task<AuthResult> task) {
                             if (task.isSuccessful()) {
                                 loginSuccess();
                             } else {

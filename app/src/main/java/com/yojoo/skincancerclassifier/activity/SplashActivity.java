@@ -3,21 +3,27 @@ package com.yojoo.skincancerclassifier.activity;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.drawable.AnimationDrawable;
 import android.os.Handler;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.yojoo.skincancerclassifier.R;
 
 public class SplashActivity extends AppCompatActivity {
+    AnimationDrawable animation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
+        ImageView Loading = findViewById(R.id.logo_loading);
+        animation = (AnimationDrawable) Loading.getDrawable();
+        animation.start();
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
             Toast.makeText(this, "Error", Toast.LENGTH_SHORT).show();
 
@@ -30,7 +36,7 @@ public class SplashActivity extends AppCompatActivity {
                     startActivity(intent);
                     finish();
                 }
-            }, 2000);
+            }, 3000);
         }
 
 
@@ -49,7 +55,7 @@ public class SplashActivity extends AppCompatActivity {
                         startActivity(intent);
                         finish();
                     }
-                }, 2000);
+                }, 3000);
 
             }
         }

@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">SkinCancerClassifier</string>
+    <string name="app_name">MAGNIFIER</string>
     <string name="gallery">gallery</string>
     <string name="upload">Upload</string>
     <string name="uploadImages">Set your image</string>
@@ -40,4 +40,5 @@
     <string name="signup">SignUp</string>
     <string name="action_refresh">Refresh</string>
     <string name="logout">Logout</string>
+    <string name="splash">Splash</string>
 </resources>
